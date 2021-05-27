@@ -1,0 +1,17 @@
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:00:40] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:01:05] "POST / HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:02:09] "POST / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:02:27] "GET / HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:05:20] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:05:27] "[32mPOST / HTTP/1.1[0m" 302 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:root:Try to execute 27/05/2021 20:06:36 id_order=16 amount=111.00 currency=643
+INFO:root:Successfully execute 27/05/2021 20:06:37 id_order=16 amount=111.00 currency=643
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:06:37] "POST / HTTP/1.1" 200 -
+INFO:root:Try to execute 27/05/2021 20:07:11 id_order=17 amount=1.00 currency=643
+INFO:root:Execute error 27/05/2021 20:07:11 id_order=17 amount=1.00 currency=643 error='Payer price amount is too small, min: 10.0'
+INFO:werkzeug:127.0.0.1 - - [27/May/2021 20:07:12] "POST / HTTP/1.1" 200 -
