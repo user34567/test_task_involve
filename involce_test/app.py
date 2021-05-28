@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from functiones import eur_pay, usd_pay, rub_pay, get_payment, db
+from functiones import eur_pay, usd_pay, rub_pay, get_payment, logger
 
 
 app = Flask(__name__)
@@ -17,17 +17,12 @@ def index():
             return render_template("index.html", mes="Выберите валюту")
         else:
             payment_amount = get_payment(payment_amount)
-            id_order = db.get_last_id()
-            if id_order is None:
-                id_order = 1
-            else:
-                id_order = id_order + 1
             if currency == "eur":
-                return eur_pay(payment_amount, id_order, product_description)
+                return pay_eur(payment_amount, product_description)
             if currency == "usd":
-                return usd_pay(payment_amount, id_order, product_description)
+                return pay_usd(payment_amount, product_description)
             if currency == "rub":
-                return rub_pay(payment_amount, id_order, product_description)
+                return pay_rub(payment_amount, product_description)
 
 
 if __name__ == "__main__":

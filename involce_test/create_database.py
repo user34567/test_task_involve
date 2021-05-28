@@ -12,4 +12,4 @@ CREATE TABLE orders(
     description TEXT
 )
 """)
-db.commit()
+commit()

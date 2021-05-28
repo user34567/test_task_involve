@@ -1,0 +1,4 @@
+2021-05-28 17:32:41,558 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-05-28 17:32:47,177 INFO 127.0.0.1 - - [28/May/2021 17:32:47] "GET / HTTP/1.1" 200 -
+2021-05-28 17:32:54,796 INFO Form submitted successfully id_order:204 curency:978 amount:333.00
+2021-05-28 17:32:54,796 INFO 127.0.0.1 - - [28/May/2021 17:32:54] "POST / HTTP/1.1" 200 -

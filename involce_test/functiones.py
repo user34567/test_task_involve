@@ -1,89 +1,89 @@
 from hashlib import sha256
-from const import *
+from const import SHOPID, SECRETKEY, PAYWAY, URL_PAY, URL_INVOICE, URL_BILL
 from flask import render_template, redirect
-from database import Database
+from database import write, get_conn
 import requests
-from datetime import datetime
-import logging
+from log import setup_logger
 
-db = Database()
-logging.basicConfig(filename='test.log',level=logging.INFO)
-
-
-def log(message, id_order, amount, currency, error=None):
-    message = message + " " + datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    message = message + " id_order=" + str(id_order) + " amount=" + str(amount) + " currency=" + str(currency)
-    if error is not None:
-        message = message + " error='" + error + "'"
-    logging.info(message)
+logger = setup_logger()
 
 
 def get_payment(payment_amount):
-    if len(payment_amount) == 1:
-        payment_amount = payment_amount + ".00"
-    if payment_amount[len(payment_amount) - 3] != "." and len(payment_amount) != 1:
-        if payment_amount[len(payment_amount) - 2] == ".":
-            payment_amount = payment_amount + "0"
-        else:
-            payment_amount = payment_amount + ".00"
-    return payment_amount
-
-
-def get_sign_rub(amount, currency, payway, shop_id, shop_order_id):
-    sign = str(amount) + ":" + str(currency) + ":" + str(payway) + ":" + str(shop_id) + ":" + str(shop_order_id)
-    sign = sign + SECRETKEY
-    sign = sha256(sign.encode('utf-8')).hexdigest()
-    return sign
+    payment_amount = float(payment_amount)
+    return "%.2f" % payment_amount
 
 
 def get_html_eur(sign, amount, currency, shop_id, id_order, link):
-    html = """<form name="Pay" method="post" action='""" + link + """' accept-charset="UTF-8"> 
-     <input type="hidden" name="amount" value='""" + str(amount) + """'/>
-     <input type="hidden" name="currency" value='""" + str(currency) + """'/> 
-     <input type="hidden" name="shop_id" value='""" + str(shop_id) + """'/> 
-     <input type="hidden" name="sign" value='""" + sign + """'/> 
-     <input type="hidden" name="shop_order_id" value='""" + str(id_order) + """'/>
-     <input type="submit"/> <input type="hidden" name="description" value="Test invoice"/> </form>"""
+    html = f"""<form name="Pay" method="post" action='{link}' accept-charset="UTF-8"> 
+     <input type="hidden" name="amount" value='{amount}'/>
+     <input type="hidden" name="currency" value='{currency}'/> 
+     <input type="hidden" name="shop_id" value='{shop_id}'/> 
+     <input type="hidden" name="sign" value='{sign}'/> 
+     <input type="hidden" name="shop_order_id" value='{id_order}'/>
+     <input type="submit"/> <input type="hidden" name="description" value="Test invoice"/>
+     </form>""".format(link=link, amount=amount, currency=currency, shop_id=shop_id, id_order=id_order, sign=sign)
     return html
 
 
 def get_referer_html_rub(method, url, data, description):
     html = """
     <!--Fragment of HTML page with the payment request form-->
-        <form method='""" + method + """' action='""" + url + """'>
-        <input type="hidden" name="ac_account_email" value='""" + data['ac_account_email'] + """'>
-        <input type="hidden" name="ac_sci_name" value='""" + data['ac_sci_name'] + """'>
-        <input type="hidden" name="ac_amount" value='""" + data['ac_amount']+"""'>
-        <input type="hidden" name="ac_currency" value='""" + data['ac_currency'] + """'>
-        <input type="hidden" name="ac_order_id" value='""" + data['ac_order_id']+"""'>
-        <input type="hidden" name="ac_sub_merchant_url" value= '""" + data['ac_sub_merchant_url'] + """' >
-        <input type="hidden" name="ac_sign" value='"""+data['ac_sign'] + """'>
+        <form method='{method}' action='{url}'>
+        <input type="hidden" name="ac_account_email" value='{email}'>
+        <input type="hidden" name="ac_sci_name" value='{name}'>
+        <input type="hidden" name="ac_amount" value='{amount}'>
+        <input type="hidden" name="ac_currency" value='{currency}'>
+        <input type="hidden" name="ac_order_id" value='{order_id}'>
+        <input type="hidden" name="ac_sub_merchant_url" value= '{sub_url}' >
+        <input type="hidden" name="ac_sign" value='{sign}'>
         <input type="submit">
-        <input type="hidden" name="ac_comments" value='""" + description + """'>
+        <input type="hidden" name="ac_comments" value='{description}'>
         <!-- Merchant custom fields -->
         </form>
         <!--Fragment of HTML page with the payment request form-->
-    """
+    """.format(method=method,
+               url=url,
+               email=data['ac_account_email'],
+               name=data['ac_sci_name'],
+               amount=data['ac_amount'],
+               currency=data['ac_currency'],
+               order_id=data['ac_order_id'],
+               sub_url=data['ac_sub_merchant_url'],
+               sign=data['ac_sign'],
+               description=description)
     return html
 
 
 def get_sign_eur(payment_amount, currency, shop_id, id_order):
-    sign = payment_amount + ":" + str(currency) + ":" + str(shop_id) + ":" + str(id_order) + SECRETKEY
+    sign = ":".join([payment_amount, currency, shop_id, id_order]) + SECRETKEY
+    sign = sha256(sign.encode('utf-8')).hexdigest()
+    return sign
+
+
+def get_sign_rub(amount, currency, payway, shop_id, shop_order_id):
+    sign = ":".join([amount, currency, payway, shop_id, shop_order_id]) + SECRETKEY
     sign = sha256(sign.encode('utf-8')).hexdigest()
     return sign
 
 
 def get_sign_usd(payment_amount, currency_payer, shop_id, id_order):
-    sign = str(currency_payer) + ":" + str(payment_amount) + ":" + str(currency_payer) + ":" + str(shop_id) + ":"
-    sign = sign + str(id_order) + SECRETKEY
+    sign = ":".join([currency_payer, payment_amount, currency_payer, shop_id, id_order]) + SECRETKEY
     sign = sha256(sign.encode('utf-8')).hexdigest()
     return sign
 
 
-def rub_pay(payment_amount, id_order, product_description):
+def get_id_order(cursor):
+    cursor.execute("SELECT MAX(id) FROM orders")
+    return cursor.fetchall()[0][0]
+
+
+def pay_rub(payment_amount, product_description):
     currency = 643
-    log("Try to execute", id_order, payment_amount, currency)
-    sign = get_sign_rub(payment_amount, currency, PAYWAY, SHOPID, id_order)
+    conn = get_conn()
+    cursor = conn.cursor()
+    write(payment_amount, currency, product_description, conn)
+    id_order = get_id_order(cursor)
+    sign = get_sign_rub(payment_amount, str(currency), PAYWAY, str(SHOPID), str(id_order))
     piastrix_request_data = {
         "currency": str(currency),
         "sign": sign,
@@ -93,43 +93,86 @@ def rub_pay(payment_amount, id_order, product_description):
         "shop_order_id": str(id_order),
         "description": product_description
     }
-    response = requests.post(URL_INVOICE, json=piastrix_request_data)
-    if response.json()['data'] is None:
-        log("Execute error", id_order, payment_amount, currency, error=response.json()['message'])
-        return render_template("index.html", mes=response.json()['message'])
-    data = response.json()['data']['data']
+    try:
+        response = requests.post(URL_INVOICE, json=piastrix_request_data)
+        if response.json()['data'] is None:
+            conn.rollback()
+            return render_template("index.html", mes=response.json()['message'])
+        data = response.json()['data']['data']
+    except Exception as e:
+        logger.exception(f'error: {e}'.format(e=e))
+        conn.rollback()
+        return render_template("index.html", mes="Please try later")
     method = response.json()['data']['method']
     url = response.json()['data']['url']
-    db.write(payment_amount, currency, product_description)
-    log("Successfully execute", id_order, payment_amount, currency)
-    return get_referer_html_rub(method, url, data, product_description)
+    if id_order == get_id_order(cursor):
+        conn.commit()
+        logger.info(f'Form submitted successfully id_order:{id_order} curency:{currency} amount{payment_amount}'.format(
+            id_order=str(id_order),
+            currency=str(currency),
+            payment_amount=payment_amount))
+        return get_referer_html_rub(method, url, data, product_description)
+    logger.warning(f'eroor: invalid id_order ')
+    conn.rollback()
+    return render_template("index.html", mes="Please try later")
 
 
-def eur_pay(payment_amount, id_order, product_description):
+def pay_eur(payment_amount, product_description):
     currency = 978
-    log("Try to execute", id_order, payment_amount, currency)
-    sign = get_sign_eur(payment_amount, currency, SHOPID, id_order)
-    db.write(payment_amount, currency, product_description)
-    log("Successfully execute", id_order, payment_amount, currency)
-    return get_html_eur(sign, payment_amount, currency, SHOPID, id_order, URL_PAY)
+    conn = get_conn()
+    cursor = conn.cursor()
+    write(payment_amount, currency, product_description, conn)
+    id_order = get_id_order(cursor)
+    sign = get_sign_eur(payment_amount, str(currency), str(SHOPID), str(id_order))
+    try:
+        html = get_html_eur(sign, payment_amount, currency, SHOPID, id_order, URL_PAY)
+    except Exception as e:
+        logger.exception(f'error: {e}'.format(e=e))
+        conn.rollback()
+        return render_template("index.html", mes="Please try later")
+    if id_order == get_id_order(cursor):
+        conn.commit()
+        logger.info(f'Form submitted successfully id_order:{str(id_order)} curency:{str(currency)} amount:{payment_amount}')
+        return html
+    logger.warning(f'error: invalid id_order ')
+    conn.rollback()
+    return render_template("index.html", mes="Please try later")
 
 
-def usd_pay(payment_amount, id_order, product_description):
+def pay_usd(payment_amount, product_description):
     currency = 840
-    log("Try to execute", id_order, payment_amount, currency)
-    sign = get_sign_usd(payment_amount, currency, SHOPID, id_order)
-    piastrix_request_data = {"description": product_description,
-                             "payer_currency": currency,
-                             "shop_amount": payment_amount,
-                             "shop_currency": currency,
-                             "shop_id": SHOPID,
-                             "shop_order_id": id_order,
-                             "sign": sign
-                             }
-    json = requests.post(URL_BILL, json=piastrix_request_data).json()
-    if json["data"] is None:
-        log("Execute error", id_order, payment_amount, currency, error=json['message'])
-        return render_template("index.html", mes=json['message'])
-    db.write(payment_amount, currency, product_description)
-    log("Successfully execute", id_order, payment_amount, currency)
-    return redirect(json['data']['url'])
+    conn = get_conn()
+    cursor = conn.cursor()
+    write(payment_amount, currency, product_description, conn)
+    id_order = get_id_order(cursor)
+    sign = get_sign_usd(payment_amount, str(currency), str(SHOPID), str(id_order))
+    piastrix_request_data = {
+        "description": product_description,
+        "payer_currency": currency,
+        "shop_amount": payment_amount,
+        "shop_currency": currency,
+        "shop_id": SHOPID,
+        "shop_order_id": id_order,
+        "sign": sign
+    }
+    try:
+        json = requests.post(URL_BILL, json=piastrix_request_data).json()
+        if json["data"] is None:
+            conn.rollback()
+            if json['message']:
+                e = json['message']
+                logger.warning(f'error: {e}'.format(e=e))
+            return render_template("index.html", mes=json['message'])
+    except Exception as e:
+        logger.exception(f'error: {e}'.format(e=e))
+        return render_template("index.html", mes="Please try later")
+    if id_order == get_id_order(cursor):
+        conn.commit()
+        logger.info(f'Form submitted successfully id_order:{id_order} curency:{currency} amount{payment_amount}'.format(
+            id_order=str(id_order),
+            currency=str(currency),
+            payment_amount=payment_amount))
+        return redirect(json['data']['url'])
+    conn.rollback()
+    logger.warning(f'error: invalid id_order ')
+    return render_template("index.html", mes="Please try later")
