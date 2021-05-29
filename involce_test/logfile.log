@@ -1,50 +1,75 @@
-2021-05-28 17:32:41,558 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-2021-05-28 17:32:47,177 INFO 127.0.0.1 - - [28/May/2021 17:32:47] "GET / HTTP/1.1" 200 -
-2021-05-28 17:32:54,796 INFO Form submitted successfully id_order:204 curency:978 amount:333.00
-2021-05-28 17:32:54,796 INFO 127.0.0.1 - - [28/May/2021 17:32:54] "POST / HTTP/1.1" 200 -
-2021-05-28 21:18:43,887 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-2021-05-28 21:18:55,239 INFO 127.0.0.1 - - [28/May/2021 21:18:55] "GET / HTTP/1.1" 200 -
-2021-05-28 21:19:00,716 ERROR Exception on / [POST]
+2021-05-29 18:16:27,349 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-05-29 18:16:32,779 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-05-29 18:16:51,411 INFO 127.0.0.1 - - [29/May/2021 18:16:51] "GET / HTTP/1.1" 200 -
+2021-05-29 18:16:55,819 INFO Form submitted successfully id_order:265 curency:978 amount:1.00
+2021-05-29 18:16:55,820 INFO 127.0.0.1 - - [29/May/2021 18:16:55] "POST / HTTP/1.1" 200 -
+2021-05-29 18:18:24,872 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-05-29 22:29:43,355 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-05-29 22:29:43,356 INFO  * Restarting with stat
+2021-05-29 22:29:43,534 WARNING  * Debugger is active!
+2021-05-29 22:29:43,595 INFO  * Debugger PIN: 346-691-044
+2021-05-29 22:29:58,548 INFO 127.0.0.1 - - [29/May/2021 22:29:58] "GET / HTTP/1.1" 200 -
+2021-05-29 22:30:03,321 ERROR error: date/time field value out of range: "29/05/2021 22:30:02"
+LINE 1: ... date, description) VALUES (213.00,978, TIMESTAMP '29/05/202...
+                                                             ^
+HINT:  Perhaps you need a different "datestyle" setting.
 Traceback (most recent call last):
-  File "/home/artyom/PycharmProjects/involce_test/venv/lib/python3.8/site-packages/flask/app.py", line 2070, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/home/artyom/PycharmProjects/involce_test/venv/lib/python3.8/site-packages/flask/app.py", line 1515, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/home/artyom/PycharmProjects/involce_test/venv/lib/python3.8/site-packages/flask/app.py", line 1513, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/home/artyom/PycharmProjects/involce_test/venv/lib/python3.8/site-packages/flask/app.py", line 1499, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/artyom/PycharmProjects/involce_test/app.py", line 21, in index
+  File "/home/artyom/PycharmProjects/try10000/app.py", line 22, in index
     return pay_eur(payment_amount, product_description)
-  File "/home/artyom/PycharmProjects/involce_test/functiones.py", line 126, in pay_eur
-    sign = get_sign_eur(payment_amount, str(currency), str(SHOPID), str(id_order))
-TypeError: 'NoneType' object is not callable
-2021-05-28 21:19:00,718 INFO 127.0.0.1 - - [28/May/2021 21:19:00] "[35m[1mPOST / HTTP/1.1[0m" 500 -
-2021-05-28 21:21:46,510 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-2021-05-28 21:21:48,914 INFO 127.0.0.1 - - [28/May/2021 21:21:48] "GET / HTTP/1.1" 200 -
-2021-05-28 21:21:53,971 INFO Form submitted successfully id_order:257 curency:978 amount:2.00
-2021-05-28 21:21:53,971 INFO 127.0.0.1 - - [28/May/2021 21:21:53] "POST / HTTP/1.1" 200 -
-2021-05-29 16:36:04,774 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-2021-05-29 16:36:10,411 INFO 127.0.0.1 - - [29/May/2021 16:36:10] "GET / HTTP/1.1" 200 -
-2021-05-29 16:36:14,630 INFO Form submitted successfully id_order:258 curency:978 amount:5.00
-2021-05-29 16:36:14,630 INFO 127.0.0.1 - - [29/May/2021 16:36:14] "POST / HTTP/1.1" 200 -
-2021-05-29 16:36:27,816 INFO Form submitted successfully id_order:259 curency:978 amount:0.20
-2021-05-29 16:36:27,817 INFO 127.0.0.1 - - [29/May/2021 16:36:27] "POST / HTTP/1.1" 200 -
-2021-05-29 16:36:33,752 INFO 127.0.0.1 - - [29/May/2021 16:36:33] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-2021-05-29 16:36:38,458 INFO Form submitted successfully id_order:260 curency:978 amount:0.01
-2021-05-29 16:36:38,458 INFO 127.0.0.1 - - [29/May/2021 16:36:38] "POST / HTTP/1.1" 200 -
-2021-05-29 16:36:44,959 DEBUG Starting new HTTPS connection (1): core.piastrix.com:443
-2021-05-29 16:36:45,416 DEBUG https://core.piastrix.com:443 "POST /bill/create HTTP/1.1" 200 112
-2021-05-29 16:36:45,419 WARNING error: Payer amount is too small, min: 1.0
-2021-05-29 16:36:45,420 INFO 127.0.0.1 - - [29/May/2021 16:36:45] "POST / HTTP/1.1" 200 -
-2021-05-29 16:36:54,628 DEBUG Starting new HTTPS connection (1): core.piastrix.com:443
-2021-05-29 16:36:55,335 DEBUG https://core.piastrix.com:443 "POST /bill/create HTTP/1.1" 200 452
-2021-05-29 16:36:55,339 INFO Form submitted successfully id_order:262 curency:840 amount11.00
-2021-05-29 16:36:55,339 INFO 127.0.0.1 - - [29/May/2021 16:36:55] "[32mPOST / HTTP/1.1[0m" 302 -
-2021-05-29 16:37:05,728 DEBUG Starting new HTTPS connection (1): core.piastrix.com:443
-2021-05-29 16:37:06,179 DEBUG https://core.piastrix.com:443 "POST /invoice/create HTTP/1.1" 200 685
-2021-05-29 16:37:06,183 INFO Form submitted successfully id_order:263 curency:643 amount13.00
-2021-05-29 16:37:06,184 INFO 127.0.0.1 - - [29/May/2021 16:37:06] "POST / HTTP/1.1" 200 -
-2021-05-29 16:37:18,223 DEBUG Starting new HTTPS connection (1): core.piastrix.com:443
-2021-05-29 16:37:18,654 DEBUG https://core.piastrix.com:443 "POST /invoice/create HTTP/1.1" 200 119
-2021-05-29 16:37:18,658 INFO 127.0.0.1 - - [29/May/2021 16:37:18] "POST / HTTP/1.1" 200 -
+  File "/home/artyom/PycharmProjects/try10000/functiones.py", line 124, in pay_eur
+    write(payment_amount, currency, product_description, conn)
+  File "/home/artyom/PycharmProjects/try10000/database.py", line 14, in write
+    conn.cursor().execute(query)
+psycopg2.errors.DatetimeFieldOverflow: date/time field value out of range: "29/05/2021 22:30:02"
+LINE 1: ... date, description) VALUES (213.00,978, TIMESTAMP '29/05/202...
+                                                             ^
+HINT:  Perhaps you need a different "datestyle" setting.
+
+2021-05-29 22:30:03,323 INFO 127.0.0.1 - - [29/May/2021 22:30:03] "POST / HTTP/1.1" 200 -
+2021-05-29 22:31:27,308 INFO  * Detected change in '/home/artyom/PycharmProjects/try10000/database.py', reloading
+2021-05-29 22:31:27,341 INFO  * Restarting with stat
+2021-05-29 22:31:27,508 WARNING  * Debugger is active!
+2021-05-29 22:31:27,508 INFO  * Debugger PIN: 346-691-044
+2021-05-29 22:31:48,668 INFO 127.0.0.1 - - [29/May/2021 22:31:48] "GET / HTTP/1.1" 200 -
+2021-05-29 22:31:52,741 ERROR error: date/time field value out of range: "29/05/2021 22:31:52"
+LINE 1: ...y, date, description) VALUES (4.00,840, TIMESTAMP '29/05/202...
+                                                             ^
+HINT:  Perhaps you need a different "datestyle" setting.
+Traceback (most recent call last):
+  File "/home/artyom/PycharmProjects/try10000/app.py", line 24, in index
+    return pay_usd(payment_amount, product_description)
+  File "/home/artyom/PycharmProjects/try10000/functiones.py", line 141, in pay_usd
+    write(payment_amount, currency, product_description, conn)
+  File "/home/artyom/PycharmProjects/try10000/database.py", line 15, in write
+    conn.cursor().execute(query)
+psycopg2.errors.DatetimeFieldOverflow: date/time field value out of range: "29/05/2021 22:31:52"
+LINE 1: ...y, date, description) VALUES (4.00,840, TIMESTAMP '29/05/202...
+                                                             ^
+HINT:  Perhaps you need a different "datestyle" setting.
+
+2021-05-29 22:31:52,743 INFO 127.0.0.1 - - [29/May/2021 22:31:52] "POST / HTTP/1.1" 200 -
+2021-05-29 22:32:33,066 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-05-29 22:32:33,067 INFO  * Restarting with stat
+2021-05-29 22:32:33,238 WARNING  * Debugger is active!
+2021-05-29 22:32:33,239 INFO  * Debugger PIN: 346-691-044
+2021-05-29 22:32:35,130 INFO 127.0.0.1 - - [29/May/2021 22:32:35] "GET / HTTP/1.1" 200 -
+2021-05-29 22:32:38,582 ERROR error: FATAL:  database " postgresql-defined-71759" does not exist
+Traceback (most recent call last):
+  File "/home/artyom/PycharmProjects/try10000/app.py", line 22, in index
+    return pay_eur(payment_amount, product_description)
+  File "/home/artyom/PycharmProjects/try10000/functiones.py", line 122, in pay_eur
+    conn = get_conn()
+  File "/home/artyom/PycharmProjects/try10000/database.py", line 19, in get_conn
+    return psycopg2.connect(database=DBNAME)
+  File "/home/artyom/PycharmProjects/try10000/venv/lib/python3.8/site-packages/psycopg2/__init__.py", line 127, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: FATAL:  database " postgresql-defined-71759" does not exist
+
+2021-05-29 22:32:38,583 INFO 127.0.0.1 - - [29/May/2021 22:32:38] "POST / HTTP/1.1" 200 -
+2021-05-29 22:33:01,085 INFO  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2021-05-29 22:33:01,086 INFO  * Restarting with stat
+2021-05-29 22:33:01,255 WARNING  * Debugger is active!
+2021-05-29 22:33:01,256 INFO  * Debugger PIN: 346-691-044
+2021-05-29 22:33:02,914 INFO 127.0.0.1 - - [29/May/2021 22:33:02] "GET / HTTP/1.1" 200 -
+2021-05-29 22:33:06,157 INFO Form submitted successfully id_order:266 curency:978 amount:4.00
+2021-05-29 22:33:06,158 INFO 127.0.0.1 - - [29/May/2021 22:33:06] "POST / HTTP/1.1" 200 -
