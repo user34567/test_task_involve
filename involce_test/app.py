@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from functiones import eur_pay, usd_pay, rub_pay, get_payment, logger
+from functiones import pay_eur, pay_rub, pay_usd, get_payment
 
 
 app = Flask(__name__)

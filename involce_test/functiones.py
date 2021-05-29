@@ -3,9 +3,10 @@ from const import SHOPID, SECRETKEY, PAYWAY, URL_PAY, URL_INVOICE, URL_BILL
 from flask import render_template, redirect
 from database import write, get_conn
 import requests
-from log import setup_logger
+import logging
 
-logger = setup_logger()
+
+logging.basicConfig(filename='logfile.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
 
 def get_payment(payment_amount):
@@ -54,22 +55,25 @@ def get_referer_html_rub(method, url, data, description):
     return html
 
 
+def get_sign_decorator(func):
+    def return_func(*args, **kwargs):
+        return sha256(func(*args, **kwargs).encode('utf-8')).hexdigest()
+    return return_func
+
+
+@get_sign_decorator
 def get_sign_eur(payment_amount, currency, shop_id, id_order):
-    sign = ":".join([payment_amount, currency, shop_id, id_order]) + SECRETKEY
-    sign = sha256(sign.encode('utf-8')).hexdigest()
-    return sign
+    return ":".join([payment_amount, currency, shop_id, id_order]) + SECRETKEY
 
 
+@get_sign_decorator
 def get_sign_rub(amount, currency, payway, shop_id, shop_order_id):
-    sign = ":".join([amount, currency, payway, shop_id, shop_order_id]) + SECRETKEY
-    sign = sha256(sign.encode('utf-8')).hexdigest()
-    return sign
+    return ":".join([amount, currency, payway, shop_id, shop_order_id]) + SECRETKEY
 
 
+@get_sign_decorator
 def get_sign_usd(payment_amount, currency_payer, shop_id, id_order):
-    sign = ":".join([currency_payer, payment_amount, currency_payer, shop_id, id_order]) + SECRETKEY
-    sign = sha256(sign.encode('utf-8')).hexdigest()
-    return sign
+    return ":".join([currency_payer, payment_amount, currency_payer, shop_id, id_order]) + SECRETKEY
 
 
 def get_id_order(cursor):
@@ -100,21 +104,17 @@ def pay_rub(payment_amount, product_description):
             return render_template("index.html", mes=response.json()['message'])
         data = response.json()['data']['data']
     except Exception as e:
-        logger.exception(f'error: {e}'.format(e=e))
+        logging.exception(f'error: {e}'.format(e=e))
         conn.rollback()
         return render_template("index.html", mes="Please try later")
     method = response.json()['data']['method']
     url = response.json()['data']['url']
-    if id_order == get_id_order(cursor):
-        conn.commit()
-        logger.info(f'Form submitted successfully id_order:{id_order} curency:{currency} amount{payment_amount}'.format(
-            id_order=str(id_order),
-            currency=str(currency),
-            payment_amount=payment_amount))
-        return get_referer_html_rub(method, url, data, product_description)
-    logger.warning(f'eroor: invalid id_order ')
-    conn.rollback()
-    return render_template("index.html", mes="Please try later")
+    conn.commit()
+    logging.info(f'Form submitted successfully id_order:{id_order} curency:{currency} amount{payment_amount}'.format(
+        id_order=str(id_order),
+        currency=str(currency),
+        payment_amount=payment_amount))
+    return get_referer_html_rub(method, url, data, product_description)
 
 
 def pay_eur(payment_amount, product_description):
@@ -127,16 +127,11 @@ def pay_eur(payment_amount, product_description):
     try:
         html = get_html_eur(sign, payment_amount, currency, SHOPID, id_order, URL_PAY)
     except Exception as e:
-        logger.exception(f'error: {e}'.format(e=e))
+        logging.exception(f'error: {e}'.format(e=e))
         conn.rollback()
         return render_template("index.html", mes="Please try later")
-    if id_order == get_id_order(cursor):
-        conn.commit()
-        logger.info(f'Form submitted successfully id_order:{str(id_order)} curency:{str(currency)} amount:{payment_amount}')
-        return html
-    logger.warning(f'error: invalid id_order ')
-    conn.rollback()
-    return render_template("index.html", mes="Please try later")
+    logging.info(f'Form submitted successfully id_order:{str(id_order)} curency:{str(currency)} amount:{payment_amount}')
+    return html
 
 
 def pay_usd(payment_amount, product_description):
@@ -161,18 +156,14 @@ def pay_usd(payment_amount, product_description):
             conn.rollback()
             if json['message']:
                 e = json['message']
-                logger.warning(f'error: {e}'.format(e=e))
+                logging.warning(f'error: {e}'.format(e=e))
             return render_template("index.html", mes=json['message'])
     except Exception as e:
-        logger.exception(f'error: {e}'.format(e=e))
+        logging.exception(f'error: {e}'.format(e=e))
         return render_template("index.html", mes="Please try later")
-    if id_order == get_id_order(cursor):
-        conn.commit()
-        logger.info(f'Form submitted successfully id_order:{id_order} curency:{currency} amount{payment_amount}'.format(
-            id_order=str(id_order),
-            currency=str(currency),
-            payment_amount=payment_amount))
-        return redirect(json['data']['url'])
-    conn.rollback()
-    logger.warning(f'error: invalid id_order ')
-    return render_template("index.html", mes="Please try later")
+    conn.commit()
+    logging.info(f'Form submitted successfully id_order:{id_order} curency:{currency} amount{payment_amount}'.format(
+        id_order=str(id_order),
+        currency=str(currency),
+        payment_amount=payment_amount))
+    return redirect(json['data']['url'])

@@ -1,9 +1,9 @@
-from database import Database
+from database import get_conn
 
-db = Database()
+conn = get_conn()
 
 
-db.execute("""
+conn.cursor().execute("""
 CREATE TABLE orders(
     id SERIAL PRIMARY KEY,
     amount MONEY NOT NULL,
